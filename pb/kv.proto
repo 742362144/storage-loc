@@ -1,0 +1,17 @@
+syntax = "proto3";
+package pb;
+
+service KVService {
+    rpc Op (Request) returns (Response) {}
+}
+
+message Request {
+    int32 OpType = 1;
+    string key = 2;
+    string value = 3;
+}
+
+message Response {
+    int32 OpType = 1;
+    string value = 2;
+}
