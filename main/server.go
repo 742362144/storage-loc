@@ -22,7 +22,9 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/742362144/storage-loc/pb"
+	"github.com/boltdb/bolt"
 	"log"
 	"net"
 	"sync"
@@ -39,24 +41,67 @@ type server struct {
 }
 
 // SayHello implements helloworld.GreeterServer
+//func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
+//	log.Printf("Received: %v", in.GetKey())
+//	if in.OpType == 1 {
+//		s.lock.RLock()
+//		defer s.lock.RUnlock()
+//		if _, ok := s.db[in.GetKey()]; ok {
+//			return &pb.Response{OpType: in.GetOpType(), Value: s.db[in.GetKey()]}, nil
+//		} else {
+//			return &pb.Response{OpType: in.GetOpType(), Value: "key not found"}, nil
+//		}
+//	} else if in.OpType == 2 {
+//		s.lock.Lock()
+//		defer s.lock.Unlock()
+//		s.db[in.GetKey()] = in.GetValue()
+//		return &pb.Response{OpType: in.GetOpType(), Value: in.GetValue()}, nil
+//	}
+//	return &pb.Response{OpType: 0, Value: in.GetValue()}, nil
+//}
+
 func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 	log.Printf("Received: %v", in.GetKey())
-	if in.OpType == 1 {
-		s.lock.RLock()
-		defer s.lock.RUnlock()
-		if _, ok := s.db[in.GetKey()]; ok {
-			return &pb.Response{OpType: in.GetOpType(), Value: s.db[in.GetKey()]}, nil
-		} else {
-			return &pb.Response{OpType: in.GetOpType(), Value: "key not found"}, nil
-		}
-	} else if in.OpType == 2 {
-		s.lock.Lock()
-		defer s.lock.Unlock()
-		s.db[in.GetKey()] = in.GetValue()
-		return &pb.Response{OpType: in.GetOpType(), Value: in.GetValue()}, nil
+
+	db, err := bolt.Open("my.db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return &pb.Response{OpType: 0, Value: in.GetValue()}, nil
+	defer db.Close()
+
+	var res pb.Response
+	if in.OpType == 1 {
+		db.View(func(tx *bolt.Tx) error {
+			b := tx.Bucket([]byte("MyBucket"))
+			v := b.Get([]byte(in.GetKey()))
+			if v != nil {
+				res.OpType =  in.GetOpType()
+				res.Value = string(v)
+			} else {
+				res.OpType =  in.GetOpType()
+				res.Value = string(v)
+			}
+			return nil
+		})
+	} else if in.OpType == 2 {
+		err = db.Update(func(tx *bolt.Tx) error {
+			b, err := tx.CreateBucketIfNotExists([]byte("MyBucket"))
+			if err != nil {
+				return fmt.Errorf("create bucket: %v", err)
+			}
+
+			if err = b.Put([]byte(in.GetKey()), []byte(in.GetValue())); err != nil {
+				return err
+			}
+			return nil
+		})
+
+		res.OpType =  in.GetOpType()
+		res.Value = string(in.GetValue())
+	}
+	return &res, nil
 }
+
 
 func main() {
 	HOST := *flag.String("ip", "133.133.135.22", "host ip")
