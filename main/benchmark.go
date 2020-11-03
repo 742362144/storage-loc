@@ -22,6 +22,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"flag"
 	"github.com/742362144/storage-loc/pb"
 	"log"
@@ -106,7 +108,10 @@ func get(host, port string, num, parallel int, timeChan chan int) {
 	pre := "client" + strconv.Itoa(mrand.Intn(parallel))
 	mrand.Seed(time.Now().UnixNano())
 	for i := 0; i < num; i++ {
-		_, err := client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
+		res, err := client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
+		for i:=0; i<100; i++ {
+			md5V(res.GetValue())
+		}
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
@@ -117,6 +122,11 @@ func get(host, port string, num, parallel int, timeChan chan int) {
 
 }
 
+func md5V(str string) string  {
+	h := md5.New()
+	h.Write([]byte(str))
+	return hex.EncodeToString(h.Sum(nil))
+}
 
 func generateValue(len int) string {
 	var container string

@@ -20,9 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="785fb763-963b-4065-96fa-8071bd43b35f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/test.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/release.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/benchmark.go" beforeDir="false" afterPath="$PROJECT_DIR$/main/benchmark.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/main/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +62,11 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="go.sdk" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\win\go\src\github.com\742362144\storage-loc" />
+    </key>
   </component>
   <component name="RunManager" selected="Go Build.go build github.com/742362144/storage-loc/main">
     <configuration name="go build client.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
