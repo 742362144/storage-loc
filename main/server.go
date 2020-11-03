@@ -59,8 +59,8 @@ func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 }
 
 func main() {
-	HOST := *flag.String("IP", "133.133.135.22", "host ip")
-	PORT := *flag.String("PORT", "50051", "port")
+	HOST := *flag.String("ip", "133.133.135.22", "host ip")
+	PORT := *flag.String("port", "50051", "port")
 
 	lis, err := net.Listen("tcp", HOST + ":" + PORT)
 	if err != nil {

@@ -41,12 +41,12 @@ const (
 )
 
 func main() {
-	HOST := *flag.String("IP", "133.133.135.22", "host ip")
-	PORT := *flag.String("PORT", "50051", "port")
-	MODEL := *flag.Int("operation model", 2, "put or get")
-	PARALLEL := *flag.Int("PARALLEL", 32, "PARALLEL nums")
-	SIZE := *flag.Int("SIZE", 16, "request value SIZE")
-	NUM := *flag.Int("NUM", 10000, "request value SIZE")
+	HOST := *flag.String("ip", "133.133.135.22", "host ip")
+	PORT := *flag.String("port", "50051", "port")
+	MODEL := *flag.Int("model", 2, "operation model")
+	PARALLEL := *flag.Int("parallel", 32, "PARALLEL nums")
+	SIZE := *flag.Int("size", 16, "request value SIZE")
+	NUM := *flag.Int("num", 10000, "request value SIZE")
 
 	//ctx, cancel := context.WithCancel(context.Background())
 	//defer cancel()
@@ -93,7 +93,7 @@ func put(host, port string, size, num, index int, timeChan chan int) {
 		}
 	}
 	cost := time.Now().UnixNano() / 1e6 - base
-	log.Printf("%s finish %d\n", pre, time.Now().UnixNano() / 1e6 - base )
+	//log.Printf("%s finish %d\n", pre, time.Now().UnixNano() / 1e6 - base )
 	timeChan <- int(cost)
 }
 
