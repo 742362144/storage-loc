@@ -86,12 +86,13 @@ func put(host, port string, size, num, index int, timeChan chan int) {
 	pre := "client" + strconv.Itoa(index)
 
 	for i := 0; i < num; i++ {
-		client, _ := getConn(host, port)
+		client, conn := getConn(host, port)
 		val := generateValue(size)
 		_, err := client.Op(ctx, &pb.Request{OpType: PUT, Key: pre+strconv.Itoa(i), Value: val})
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
+		conn.Close()
 	}
 	cost := time.Now().UnixNano() / 1e6 - base
 	//log.Printf("%s finish %d\n", pre, time.Now().UnixNano() / 1e6 - base )
@@ -106,6 +107,7 @@ func get(host, port string, num, parallel int, timeChan chan int) {
 	pre := "client" + strconv.Itoa(mrand.Intn(parallel))
 	mrand.Seed(time.Now().UnixNano())
 	ctx := context.Background()
+
 	for i := 0; i < num; i++ {
 		for j:=0; j<8; j++ {
 			client, conn := getConn(host, port)
