@@ -21,6 +21,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"github.com/742362144/storage-loc/pb"
 	"log"
 	"net"
@@ -29,9 +30,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	port = ":50051"
-)
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
@@ -61,7 +59,10 @@ func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
+	HOST := *flag.String("IP", "133.133.133.22", "host ip")
+	PORT := *flag.String("PORT", "50051", "port")
+
+	lis, err := net.Listen("tcp", HOST + ":" + PORT)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

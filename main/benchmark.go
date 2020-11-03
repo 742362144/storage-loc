@@ -41,6 +41,8 @@ const (
 )
 
 func main() {
+	HOST := *flag.String("IP", "133.133.133.22", "host ip")
+	PORT := *flag.String("PORT", "50051", "port")
 	MODEL := *flag.Int("operation model", 2, "put or get")
 	PARALLEL := *flag.Int("PARALLEL", 32, "PARALLEL nums")
 	SIZE := *flag.Int("SIZE", 16, "request value SIZE")
@@ -56,12 +58,12 @@ func main() {
 	for j:=0; j< PARALLEL; j++ {
 		if MODEL == PUT {
 			go func(index int, timeChan chan int) {
-				put(SIZE, NUM, index, timeChan)
+				put(HOST, PORT, SIZE, NUM, index, timeChan)
 				wg.Done()
 			}(j, timeChan)
 		} else if MODEL == GET {
 			go func(timeChan chan int) {
-				get(SIZE, NUM, PARALLEL, timeChan)
+				get(HOST, PORT, NUM, PARALLEL, timeChan)
 				wg.Done()
 			}(timeChan)
 		}
@@ -75,9 +77,9 @@ func main() {
 	log.Printf("throught: %f", throught)
 }
 
-func put(size, num, index int, timeChan chan int) {
+func put(host, port string, size, num, index int, timeChan chan int) {
 	ctx := context.Background()
-	client, _ := getConn()
+	client, _ := getConn(host, port)
 	base := time.Now().UnixNano() / 1e6
 
 	//添加kv
@@ -95,9 +97,9 @@ func put(size, num, index int, timeChan chan int) {
 	timeChan <- int(cost)
 }
 
-func get(size, num, parallel int, timeChan chan int) {
+func get(host, port string, num, parallel int, timeChan chan int) {
 	ctx := context.Background()
-	client, _ := getConn()
+	client, _ := getConn(host, port)
 	base := time.Now().UnixNano() / 1e6
 
 	//添加kv
@@ -129,9 +131,9 @@ func generateValue(len int) string {
 	return container
 }
 
-func getConn() (pb.KVServiceClient, *grpc.ClientConn) {
+func getConn(host, port string) (pb.KVServiceClient, *grpc.ClientConn) {
 	// Set up a connection to the server.
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(host + ":" + port, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
