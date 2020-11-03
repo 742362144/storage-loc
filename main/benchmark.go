@@ -83,7 +83,7 @@ func put(host, port string, size, num, index int, timeChan chan int) {
 	base := time.Now().UnixNano() / 1e6
 	ctx := context.Background()
 	//添加kv
-	pre := "client" + strconv.Itoa(index)
+	pre := "client" + strconv.Itoa(index) + "_"
 
 	for i := 0; i < num; i++ {
 		client, conn := getConn(host, port)
@@ -104,7 +104,7 @@ func get(host, port string, num, parallel int, timeChan chan int) {
 	base := time.Now().UnixNano() / 1e6
 
 	//添加kv
-	pre := "client" + strconv.Itoa(mrand.Intn(parallel))
+	pre := "client" + strconv.Itoa(mrand.Intn(parallel)) + "_"
 	mrand.Seed(time.Now().UnixNano())
 	ctx := context.Background()
 
