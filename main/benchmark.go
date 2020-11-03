@@ -41,7 +41,7 @@ const (
 )
 
 func main() {
-	HOST := *flag.String("IP", "133.133.133.22", "host ip")
+	HOST := *flag.String("IP", "133.133.135.22", "host ip")
 	PORT := *flag.String("PORT", "50051", "port")
 	MODEL := *flag.Int("operation model", 2, "put or get")
 	PARALLEL := *flag.Int("PARALLEL", 32, "PARALLEL nums")
