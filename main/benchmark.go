@@ -22,52 +22,99 @@ package main
 import (
 	"bytes"
 	"context"
-	"crypto/rand"
+	"flag"
 	"github.com/742362144/storage-loc/pb"
 	"log"
 	"math/big"
 	"strconv"
+	"sync"
 	"time"
-
+	"crypto/rand"
+	mrand "math/rand"
 	"google.golang.org/grpc"
 )
 
+const (
+	GET = 1
+	PUT = 2
+	RUN = 3
+)
+
 func main() {
-	// Set up a connection to the server.
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+	MODEL := *flag.Int("operation model", 2, "put or get")
+	PARALLEL := *flag.Int("PARALLEL", 32, "PARALLEL nums")
+	SIZE := *flag.Int("SIZE", 16, "request value SIZE")
+	NUM := *flag.Int("NUM", 10000, "request value SIZE")
+
+	//ctx, cancel := context.WithCancel(context.Background())
+	//defer cancel()
+
+
+	var wg sync.WaitGroup
+	timeChan := make(chan int, 100)
+	wg.Add(PARALLEL)
+	for j:=0; j< PARALLEL; j++ {
+		if MODEL == PUT {
+			go func(index int, timeChan chan int) {
+				put(SIZE, NUM, index, timeChan)
+				wg.Done()
+			}(j, timeChan)
+		} else if MODEL == GET {
+			go func(timeChan chan int) {
+				get(SIZE, NUM, PARALLEL, timeChan)
+				wg.Done()
+			}(timeChan)
+		}
 	}
-	defer conn.Close()
-	c := pb.NewKVServiceClient(conn)
+	wg.Wait()
+	total := 0
+	for i := 0; i < PARALLEL; i++ {
+		total += <-timeChan
+	}
+	throught := float64(NUM * PARALLEL * PARALLEL * 1000)/ float64(total)
+	log.Printf("throught: %f", throught)
+}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	//for i:=0; i<100000; i++ {
-	//	r, err := c.Op(ctx, &pb.Request{OpType: 1, Key: "key", Value: ""})
-	//	if err != nil {
-	//		log.Fatalf("could not greet: %v", err)
-	//	}
-	//	if i % 1000 == 0 {
-	//		log.Printf("Greeting: %s", r.GetValue())
-	//	}
-	//}
-
-	base := time.Now().UnixNano() / 1e9
+func put(size, num, index int, timeChan chan int) {
+	ctx := context.Background()
+	client, _ := getConn()
+	base := time.Now().UnixNano() / 1e6
 
 	//添加kv
-	val := generateValue(8)
-	for i := 0; i < 100000; i++ {
-		r, err := c.Op(ctx, &pb.Request{OpType: 2, Key: strconv.Itoa(i), Value: val})
+	pre := "client" + strconv.Itoa(index)
+
+	for i := 0; i < num; i++ {
+		val := generateValue(size)
+		_, err := client.Op(ctx, &pb.Request{OpType: PUT, Key: pre+strconv.Itoa(i), Value: val})
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
-		if i % 1000 == 0 {
-			println(time.Now().UnixNano() / 1e9 - base)
-			log.Printf("Greeting: %s", r.GetValue())
+	}
+	cost := time.Now().UnixNano() / 1e6 - base
+	log.Printf("%s finish %d\n", pre, time.Now().UnixNano() / 1e6 - base )
+	timeChan <- int(cost)
+}
+
+func get(size, num, parallel int, timeChan chan int) {
+	ctx := context.Background()
+	client, _ := getConn()
+	base := time.Now().UnixNano() / 1e6
+
+	//添加kv
+	pre := "client" + strconv.Itoa(mrand.Intn(parallel))
+	mrand.Seed(time.Now().UnixNano())
+	for i := 0; i < num; i++ {
+		_, err := client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
+		if err != nil {
+			log.Fatalf("could not greet: %v", err)
 		}
 	}
+	cost := time.Now().UnixNano() / 1e6 - base
+	log.Printf("%s finish %d\n", pre, time.Now().UnixNano() / 1e6 - base )
+	timeChan <- int(cost)
+
 }
+
 
 func generateValue(len int) string {
 	var container string
@@ -80,4 +127,14 @@ func generateValue(len int) string {
 		container += string(str[randomInt.Int64()])
 	}
 	return container
+}
+
+func getConn() (pb.KVServiceClient, *grpc.ClientConn) {
+	// Set up a connection to the server.
+	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	client := pb.NewKVServiceClient(conn)
+	return client, conn
 }

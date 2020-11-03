@@ -46,7 +46,11 @@ func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 	if in.OpType == 1 {
 		s.lock.RLock()
 		defer s.lock.RUnlock()
-		return &pb.Response{OpType: in.GetOpType(), Value: in.GetValue()}, nil
+		if _, ok := s.db[in.GetKey()]; ok {
+			return &pb.Response{OpType: in.GetOpType(), Value: s.db[in.GetKey()]}, nil
+		} else {
+			return &pb.Response{OpType: in.GetOpType(), Value: "key not found"}, nil
+		}
 	} else if in.OpType == 2 {
 		s.lock.Lock()
 		defer s.lock.Unlock()
