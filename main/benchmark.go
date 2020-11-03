@@ -82,18 +82,23 @@ func main() {
 func put(host, port string, size, num, index int, timeChan chan int) {
 	base := time.Now().UnixNano() / 1e6
 	ctx := context.Background()
+	conn, err := grpc.Dial(host + ":" + port, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
 	//添加kv
 	pre := "client" + strconv.Itoa(index) + "_"
 
 	for i := 0; i < num; i++ {
-		client, conn := getConn(host, port)
+		client := pb.NewKVServiceClient(conn)
 		val := generateValue(size)
 		_, err := client.Op(ctx, &pb.Request{OpType: PUT, Key: pre+strconv.Itoa(i), Value: val})
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
-		conn.Close()
 	}
+	conn.Close()
 	cost := time.Now().UnixNano() / 1e6 - base
 	//log.Printf("%s finish %d\n", pre, time.Now().UnixNano() / 1e6 - base )
 	timeChan <- int(cost)
