@@ -1,3 +1,5 @@
 git pull
-go build main/server.go
-go build main/benchmark.go
+rm -f server benchmark
+cd main
+go build server.go
+go build benchmark.go

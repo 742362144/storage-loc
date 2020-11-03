@@ -108,12 +108,14 @@ func get(host, port string, num, parallel int, timeChan chan int) {
 	pre := "client" + strconv.Itoa(mrand.Intn(parallel))
 	mrand.Seed(time.Now().UnixNano())
 	for i := 0; i < num; i++ {
-		res, err := client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
-		for i:=0; i<100; i++ {
-			md5V(res.GetValue())
-		}
-		if err != nil {
-			log.Fatalf("could not greet: %v", err)
+		for j:=0; j<8; j++ {
+			res, err := client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
+			for i:=0; i<100; i++ {
+				md5V(res.GetValue())
+			}
+			if err != nil {
+				log.Fatalf("could not greet: %v", err)
+			}
 		}
 	}
 	cost := time.Now().UnixNano() / 1e6 - base
