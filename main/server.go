@@ -38,6 +38,7 @@ type server struct {
 	pb.UnimplementedKVServiceServer
 	lock *sync.RWMutex
 	db map[string]string
+	boltDB *bolt.DB
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -63,15 +64,11 @@ type server struct {
 func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 	log.Printf("Received: %v", in.GetKey())
 
-	db, err := bolt.Open("my.db", 0600, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+
 
 	var res pb.Response
 	if in.OpType == 1 {
-		db.View(func(tx *bolt.Tx) error {
+		s.boltDB.View(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte("MyBucket"))
 			v := b.Get([]byte(in.GetKey()))
 			if v != nil {
@@ -84,7 +81,7 @@ func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 			return nil
 		})
 	} else if in.OpType == 2 {
-		err = db.Update(func(tx *bolt.Tx) error {
+		s.boltDB.Update(func(tx *bolt.Tx) error {
 			b, err := tx.CreateBucketIfNotExists([]byte("MyBucket"))
 			if err != nil {
 				return fmt.Errorf("create bucket: %v", err)
@@ -115,6 +112,14 @@ func main() {
 	kvserver := new(server)
 	kvserver.lock = new(sync.RWMutex)
 	kvserver.db = make(map[string]string)
+
+	db, err := bolt.Open("my.db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	kvserver.boltDB = db
+	defer db.Close()
+
 	pb.RegisterKVServiceServer(s, kvserver)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
