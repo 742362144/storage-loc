@@ -3,6 +3,8 @@ package pb;
 
 service KVService {
     rpc Op (Request) returns (Response) {}
+    rpc Invoke (Request) returns (Response) {}
+    rpc PushBack (Request) returns (Response) {}
 }
 
 message Request {
@@ -12,6 +14,17 @@ message Request {
 }
 
 message Response {
+    int32 OpType = 1;
+    string value = 2;
+}
+
+message InvokeRequest {
+    int32 OpType = 1;
+    string key = 2;
+    string value = 3;
+}
+
+message InvokeResponse {
     int32 OpType = 1;
     string value = 2;
 }

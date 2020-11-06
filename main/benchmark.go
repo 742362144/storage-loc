@@ -20,20 +20,17 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"flag"
+	"fmt"
 	"github.com/742362144/storage-loc/pb"
+	"github.com/742362144/storage-loc/util"
+	"google.golang.org/grpc"
 	"log"
-	"math/big"
+	mrand "math/rand"
 	"strconv"
 	"sync"
 	"time"
-	"crypto/rand"
-	mrand "math/rand"
-	"google.golang.org/grpc"
 )
 
 const (
@@ -43,12 +40,13 @@ const (
 )
 
 func main() {
-	HOST := *flag.String("ip", "133.133.135.22", "host ip")
+	HOST := *flag.String("host", "133.133.133.127", "host ip")
 	PORT := *flag.String("port", "50051", "port")
-	MODEL := *flag.Int("model", 2, "operation model")
-	PARALLEL := *flag.Int("parallel", 32, "PARALLEL nums")
-	SIZE := *flag.Int("size", 16, "request value SIZE")
+	MODEL := *flag.Int("model", 1, "operation model")
+	PARALLEL := *flag.Int("parallel", 16, "PARALLEL nums")
+	SIZE := *flag.Int("size", 128, "request value SIZE")
 	NUM := *flag.Int("num", 10000, "request value SIZE")
+	DEEPTH := *flag.Int("deepth", 6, "request value SIZE")
 
 	//ctx, cancel := context.WithCancel(context.Background())
 	//defer cancel()
@@ -65,7 +63,7 @@ func main() {
 			}(j, timeChan)
 		} else if MODEL == GET {
 			go func(timeChan chan int) {
-				get(HOST, PORT, NUM, PARALLEL, timeChan)
+				get(HOST, PORT, DEEPTH,NUM, PARALLEL, timeChan)
 				wg.Done()
 			}(timeChan)
 		}
@@ -76,13 +74,37 @@ func main() {
 		total += <-timeChan
 	}
 	throught := float64(NUM * PARALLEL * PARALLEL * 1000)/ float64(total)
-	log.Printf("throught: %f", throught)
+	fmt.Printf("throught: %f\n", throught)
+
+	//_, filedir,_,_ := runtime.Caller(1)
+	//fmt.Println(filedir)
+	//f, err := os.OpenFile("C:/Users/win/go/src/github.com/742362144/storage-loc/main/result", os.O_RDWR,0600)
+	//defer f.Close()
+	//if err !=nil {
+	//	fmt.Println(err.Error())
+	//} else {
+	//	jsonStr,_ :=ioutil.ReadAll(f)
+	//	var mapResult map[string]string
+	//	json.Unmarshal(jsonStr, &mapResult)
+	//	if mapResult == nil {
+	//		mapResult = make(map[string]string)
+	//	}
+	//	mapResult["client" + strconv.Itoa(DEEPTH)] = strconv.Itoa(int(throught))
+	//	jsonStr, err = json.Marshal(mapResult)
+	//
+	//	_,err=f.Write(jsonStr)
+	//	fmt.Println(string(jsonStr))
+	//}
+
 }
 
-func put(host, port string, size, num, index int, timeChan chan int) {
+func put(host, port string,size, num, index int, timeChan chan int) {
 	base := time.Now().UnixNano() / 1e6
 	ctx := context.Background()
 	conn, err := grpc.Dial(host + ":" + port, grpc.WithInsecure(), grpc.WithBlock())
+	client := pb.NewKVServiceClient(conn)
+	defer conn.Close()
+
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -91,65 +113,49 @@ func put(host, port string, size, num, index int, timeChan chan int) {
 	pre := "client" + strconv.Itoa(index) + "_"
 
 	for i := 0; i < num; i++ {
-		client := pb.NewKVServiceClient(conn)
-		val := generateValue(size)
+		val := util.GENERATEVALUE(size)
 		_, err := client.Op(ctx, &pb.Request{OpType: PUT, Key: pre+strconv.Itoa(i), Value: val})
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
 	}
-	conn.Close()
 	cost := time.Now().UnixNano() / 1e6 - base
 	//log.Printf("%s finish %d\n", pre, time.Now().UnixNano() / 1e6 - base )
 	timeChan <- int(cost)
 }
 
-func get(host, port string, num, parallel int, timeChan chan int) {
-
+func get(host, port string, deepth, num, parallel int, timeChan chan int) {
 	base := time.Now().UnixNano() / 1e6
 
 	//添加kv
 	pre := "client" + strconv.Itoa(mrand.Intn(parallel)) + "_"
 	mrand.Seed(time.Now().UnixNano())
 	ctx := context.Background()
-
+	client, conn := getConn(host, port)
+	defer conn.Close()
 	for i := 0; i < num; i++ {
-		for j:=0; j<8; j++ {
-			client, conn := getConn(host, port)
+		//client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
+		for j:=0; j<deepth; j++ {
+			//res, err := client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
+			//for i:=0; i<10; i++ {
+			//	util.MD5V(res.GetValue())
+			//}
 			res, err := client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
-			for i:=0; i<100; i++ {
-				md5V(res.GetValue())
-			}
-			conn.Close()
+			util.MD5V(res.GetValue())
 			if err != nil {
 				log.Fatalf("could not greet: %v", err)
 			}
+			//log.Printf("value %s pi: %d", res.GetValue(), pigo.Pi(1000))
 		}
 	}
 	cost := time.Now().UnixNano() / 1e6 - base
 	log.Printf("%s finish %d\n", pre, time.Now().UnixNano() / 1e6 - base )
 	timeChan <- int(cost)
 
+
 }
 
-func md5V(str string) string  {
-	h := md5.New()
-	h.Write([]byte(str))
-	return hex.EncodeToString(h.Sum(nil))
-}
 
-func generateValue(len int) string {
-	var container string
-	var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-	b := bytes.NewBufferString(str)
-	length := b.Len()
-	bigInt := big.NewInt(int64(length))
-	for i := 0;i < len ;i++  {
-		randomInt,_ := rand.Int(rand.Reader,bigInt)
-		container += string(str[randomInt.Int64()])
-	}
-	return container
-}
 
 func getConn(host, port string) (pb.KVServiceClient, *grpc.ClientConn) {
 	// Set up a connection to the server.
