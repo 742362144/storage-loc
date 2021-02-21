@@ -40,13 +40,13 @@ const (
 )
 
 func main() {
-	HOST := *flag.String("host", "133.133.133.127", "host ip")
+	HOST := *flag.String("host", "133.133.135.30", "host ip")
 	PORT := *flag.String("port", "50051", "port")
-	MODEL := *flag.Int("model", 1, "operation model")
+	MODEL := *flag.Int("model", PUT, "operation model")
 	PARALLEL := *flag.Int("parallel", 16, "PARALLEL nums")
-	SIZE := *flag.Int("size", 128, "request value SIZE")
-	NUM := *flag.Int("num", 10000, "request value SIZE")
-	DEEPTH := *flag.Int("deepth", 6, "request value SIZE")
+	SIZE := *flag.Int("size", 2048, "request value SIZE")
+	NUM := *flag.Int("num", 5000, "request value SIZE")
+	DEEPTH := *flag.Int("deepth", 1, "request value SIZE")
 
 	//ctx, cancel := context.WithCancel(context.Background())
 	//defer cancel()
@@ -68,6 +68,7 @@ func main() {
 			}(timeChan)
 		}
 	}
+
 	wg.Wait()
 	total := 0
 	for i := 0; i < PARALLEL; i++ {
@@ -134,7 +135,7 @@ func get(host, port string, deepth, num, parallel int, timeChan chan int) {
 	client, conn := getConn(host, port)
 	defer conn.Close()
 	for i := 0; i < num; i++ {
-		//client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
+		//client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strcgotsc.BenchStart()onv.Itoa(mrand.Intn(num)), Value: ""})
 		for j:=0; j<deepth; j++ {
 			//res, err := client.Op(ctx, &pb.Request{OpType: GET, Key: pre+strconv.Itoa(mrand.Intn(num)), Value: ""})
 			//for i:=0; i<10; i++ {

@@ -22,15 +22,16 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/742362144/storage-loc/pb"
 	"github.com/742362144/storage-loc/util"
 	"github.com/boltdb/bolt"
+	"github.com/dterei/gotsc"
 	"github.com/syndtr/goleveldb/leveldb"
+	"google.golang.org/grpc"
 	"log"
 	"net"
 	"sync"
-
-	"google.golang.org/grpc"
 )
 
 
@@ -42,6 +43,8 @@ type server struct {
 	db map[string]string
 	boltDB *bolt.DB
 	ldb *leveldb.DB
+	done chan bool
+	total int64
 }
 
 //func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
@@ -110,7 +113,7 @@ type server struct {
 //}
 
 func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
-	log.Printf("Received: %v", in)
+	//log.Printf("Received: %v", in)
 
 	var res pb.Response
 	if in.OpType == 1 {
@@ -125,17 +128,32 @@ func (s *server) Op(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 			}
 		}
 	} else if in.OpType == 2 {
-		err := s.ldb.Put([]byte(in.GetKey()), []byte(in.GetValue()), nil)
-		if err == nil {
-			res.OpType =  in.GetOpType()
-			res.Value = string(in.GetValue())
+		s.lock.Lock()
+		defer s.lock.Unlock()
+		//s.db[in.Key] = in.Value
+		res.OpType =  in.GetOpType()
+		res.Value = in.GetValue()
+		s.total = s.total + 1
+		//fmt.Println(s.total)
+		if s.total == 5000 * 16 {
+			go func() {
+				fmt.Println("send to done...")
+				s.done <- true
+			}()
 		}
 	}
 	return &res, nil
 }
 
 func main() {
-	HOST := *flag.String("host", "133.133.133.127", "host ip")
+	//sigs := make(chan os.Signal, 1)
+	//done := make(chan bool, 1)
+
+	//设置要接收的信号
+	//signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+
+	HOST := *flag.String("host", "133.133.135.30", "host ip")
 	PORT := *flag.String("port", "50051", "port")
 	DEEPTH := *flag.Int("deepth", 0, "request value SIZE")
 
@@ -148,20 +166,42 @@ func main() {
 	kvserver.lock = new(sync.RWMutex)
 	kvserver.deepth = DEEPTH
 	kvserver.db = make(map[string]string)
+	kvserver.total = 0
+	kvserver.done = make(chan bool, 100)
 
-	db, err := bolt.Open("my.db", 0600, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	kvserver.boltDB = db
-	defer db.Close()
+	//db, err := bolt.Open("my.db", 0600, nil)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//kvserver.boltDB = db
+	//defer db.Close()
+	//
+	//ldb, err := leveldb.OpenFile("lerveldb", nil)
+	//kvserver.ldb = ldb
+	//defer ldb.Close()
+	tsc := gotsc.TSCOverhead()
+	fmt.Println("TSC Overhead:", tsc)
 
-	ldb, err := leveldb.OpenFile("lerveldb", nil)
-	kvserver.ldb = ldb
-	defer ldb.Close()
+	start := gotsc.BenchStart()
 
+	//go func() {
+	//	sig := <-sigs
+	//	fmt.Println()
+	//	fmt.Println(sig)
+	//	s.GracefulStop()
+	//	done <- true
+	//}()
+	go func() {
+		<-kvserver.done
+		fmt.Println()
+		s.GracefulStop()
+	}()
 	pb.RegisterKVServiceServer(s, kvserver)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
+	//<-done
+	end := gotsc.BenchEnd()
+	log.Println((end - start - tsc) / (16 * 5000))
 }

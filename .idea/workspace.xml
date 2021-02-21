@@ -19,19 +19,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="785fb763-963b-4065-96fa-8071bd43b35f" name="Default Changelist" comment="">
+    <list default="true" id="51fdd4d6-397a-489c-be30-eb4a3889c801" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/main/net.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/sha1.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/benchmark.go" beforeDir="false" afterPath="$PROJECT_DIR$/main/benchmark.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/cycle.go" beforeDir="false" afterPath="$PROJECT_DIR$/main/cycle.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/ml.go" beforeDir="false" afterPath="$PROJECT_DIR$/main/ml.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/main/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/main/test.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/my.db" beforeDir="false" afterPath="$PROJECT_DIR$/my.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pb/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/pb/build.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pb/kv.proto" beforeDir="false" afterPath="$PROJECT_DIR$/pb/kv.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/util.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +56,7 @@
     <property name="configurable.Module.GOPATH.is.expanded" value="false" />
     <property name="configurable.Project.GOPATH.is.expanded" value="true" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../golearn" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Desktop/mtSecKill" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -72,20 +66,21 @@
     <property name="settings.editor.selected.configurable" value="go.sdk" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\win\go\src\github.com\742362144\storage-loc" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\win\go\src\github.com\742362144\storage-loc\main" />
     </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\win\go\src\github.com\742362144\storage-loc" />
+    </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build server.go">
-    <configuration name="go build github.com/742362144/storage-loc/main (1)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Go Build.go build github.com/742362144/storage-loc/main">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="storage-loc" />
       <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
       <kind value="FILE" />
-      <filePath value="$PROJECT_DIR$/main/disk.go" />
-      <package value="github.com/742362144/storage-loc/main" />
+      <filePath value="$PROJECT_DIR$" />
+      <package value="github.com/742362144/storage-loc" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
@@ -94,6 +89,15 @@
       <working_directory value="$PROJECT_DIR$" />
       <kind value="FILE" />
       <filePath value="$PROJECT_DIR$/main/cycle.go" />
+      <package value="github.com/742362144/storage-loc/main" />
+      <directory value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build github.com/742362144/storage-loc/main (3)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="storage-loc" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/main/sha1.go" />
       <package value="github.com/742362144/storage-loc/main" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
@@ -116,6 +120,17 @@
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="storage-loc" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <framework value="gotest" />
+      <kind value="DIRECTORY" />
+      <package value="github.com/742362144/storage-loc" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
     <configuration name="test.sh" type="ShConfigurationType" temporary="true">
       <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
       <option name="SCRIPT_PATH" value="$PROJECT_DIR$/main/test.sh" />
@@ -129,11 +144,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build server.go" />
         <item itemvalue="Go Build.go build github.com/742362144/storage-loc/main" />
+        <item itemvalue="Go Build.go build server.go" />
+        <item itemvalue="Go Build.go build github.com/742362144/storage-loc/main (3)" />
         <item itemvalue="Shell Script.test.sh" />
         <item itemvalue="Go Build.go build github.com/742362144/storage-loc/main (2)" />
-        <item itemvalue="Go Build.go build github.com/742362144/storage-loc/main (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -165,26 +180,26 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="765" y="357" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2048.1112@0.0.2048.1112" timestamp="1604454598146" />
-    <state x="805" y="311" key="FileChooserDialogImpl" timestamp="1604563853438">
+    <state x="805" y="311" key="FileChooserDialogImpl" timestamp="1611195568179">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1604563853438" />
-    <state width="2005" height="283" key="GridCell.Tab.0.bottom" timestamp="1604627788395">
+    <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1611195568179" />
+    <state width="2005" height="267" key="GridCell.Tab.0.bottom" timestamp="1609156441497">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="283" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1604627788395" />
-    <state width="2005" height="283" key="GridCell.Tab.0.center" timestamp="1604627788395">
+    <state width="2005" height="267" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1609156441497" />
+    <state width="2005" height="267" key="GridCell.Tab.0.center" timestamp="1609156441497">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="283" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1604627788395" />
-    <state width="2005" height="283" key="GridCell.Tab.0.left" timestamp="1604627788395">
+    <state width="2005" height="267" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1609156441497" />
+    <state width="2005" height="267" key="GridCell.Tab.0.left" timestamp="1609156441497">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="283" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1604627788395" />
-    <state width="2005" height="283" key="GridCell.Tab.0.right" timestamp="1604627788395">
+    <state width="2005" height="267" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1609156441497" />
+    <state width="2005" height="267" key="GridCell.Tab.0.right" timestamp="1609156441497">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="283" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1604627788395" />
+    <state width="2005" height="267" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1609156441497" />
     <state width="2005" height="376" key="GridCell.Tab.1.bottom" timestamp="1604545650205">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>

@@ -1,0 +1,79 @@
+###########100mbs##############
+2020/12/27 19:27:13 326934
+[root@node30 storage-loc]# go run main/server.go
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:28:14 356832
+[root@node30 storage-loc]# go run main/server.go
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:27:51 390626
+[root@node30 storage-loc]# go run main/server.go
+TSC Overhead: 48
+send to done...
+
+
+2020/12/27 19:28:46 407020
+[root@node30 storage-loc]# go run main/server.go
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:29:34 684674
+[root@node30 storage-loc]# go run main/server.go
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:30:49 1402806
+[root@node30 storage-loc]# go run main/server.go
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:33:46 3659530
+[root@node30 storage-loc]#
+[root@node30 storage-loc]# go run main/server.go
+TSC Overhead: 48
+send to done...
+
+
+
+
+###########1Gb##############
+
+[root@node30 storage-loc]# go run main/server.go   1
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:38:00 104384
+[root@node30 storage-loc]# go run main/server.go  128
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:40:54 263317
+[root@node30 storage-loc]# go run main/server.go  256
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:41:30 462258
+[root@node30 storage-loc]# go run main/server.go  512
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:42:30 746263
+[root@node30 storage-loc]# go run main/server.go   1024
+TSC Overhead: 48
+send to done...
+
+2020/12/27 19:43:55 1446899
+[root@node30 storage-loc]# go run main/server.go   2048
+TSC Overhead: 36
+send to done...
+
+2020/12/27 19:46:34 3261710
+[root@node30 storage-loc]# go run main/server.go  4096
+TSC Overhead: 36
+send to done...
+
+2020/12/27 19:53:43 8563204
+
